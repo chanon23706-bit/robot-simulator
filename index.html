@@ -3,41 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini Robot Simulator</title>
+<title>Mini Robot Simulator — นายชานน ชาญประโคน</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:sans-serif;background:#1a1a2e;display:flex;justify-content:center;align-items:center;min-height:100vh}
-#app{display:flex;width:900px;height:580px;background:#1e1e2e;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5)}
-#canvas-area{flex:1;position:relative;background:#111;overflow:hidden}
-canvas#sim{width:100%;height:100%;display:block}
-#toolbar{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
-#toolbar button{font-size:13px;padding:6px 18px;border:none;border-radius:8px;cursor:pointer;font-weight:500}
-#btn-run{background:#1D9E75;color:#fff}
-#btn-run:hover{background:#0F6E56}
-#btn-stop{background:#E24B4A;color:#fff}
-#btn-stop:hover{background:#A32D2D}
-#btn-reset{background:#378ADD;color:#fff}
-#btn-reset:hover{background:#185FA5}
-#panel{width:260px;background:#252535;border-left:1px solid #333;display:flex;flex-direction:column;overflow-y:auto}
-.panel-section{padding:10px 12px;border-bottom:1px solid #333}
-.panel-title{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.btn-row{display:flex;gap:5px;flex-wrap:wrap}
-.btn-row button{font-size:11px;padding:4px 8px;border:1px solid #444;border-radius:6px;background:#1e1e2e;color:#ccc;cursor:pointer}
-.btn-row button.active{background:#1D9E75;color:#fff;border-color:#0F6E56}
-.slider-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
-.slider-row label{font-size:12px;color:#888;width:38px;flex-shrink:0}
-.slider-row input[type=range]{flex:1;accent-color:#1D9E75}
-.slider-row span{font-size:12px;font-weight:500;min-width:34px;text-align:right;color:#eee}
-.sensor-row{display:flex;gap:4px;justify-content:center;margin:4px 0}
-.sensor-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid #555;background:#333;transition:background .1s}
-.sensor-dot.on{background:#E24B4A;border-color:#A32D2D}
-#hud{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.7);color:#0f0;font-family:monospace;font-size:11px;padding:6px 10px;border-radius:6px;pointer-events:none;line-height:1.8}
-.log{font-size:11px;color:#666;padding:3px 0;border-bottom:1px solid #333}
-#log-box{max-height:80px;overflow-y:auto}
-h1{color:#eee;font-size:13px;padding:10px 12px;border-bottom:1px solid #333}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+#header{width:100%;max-width:1200px;text-align:center;margin-bottom:14px}
+#header h1{font-size:26px;font-weight:700;color:#fff;letter-spacing:1px;text-shadow:0 0 20px rgba(29,158,117,.6)}
+#header .sub{font-size:13px;color:#aaa;margin-top:4px}
+#header .school{font-size:12px;color:#666;margin-top:2px}
+#app{display:flex;width:100%;max-width:1200px;height:660px;background:#16162a;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7);border:1px solid #2a2a4a}
+#canvas-area{flex:1;position:relative;background:#0d0d1a;overflow:hidden}
+canvas#sim{width:100%;height:100%;display:block;cursor:default}
+#toolbar{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:10px}
+#toolbar button{font-size:14px;padding:8px 22px;border:none;border-radius:10px;cursor:pointer;font-weight:600;letter-spacing:.5px;transition:all .15s;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+#btn-run{background:linear-gradient(135deg,#1D9E75,#0F6E56);color:#fff}
+#btn-run:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(29,158,117,.4)}
+#btn-stop{background:linear-gradient(135deg,#E24B4A,#A32D2D);color:#fff}
+#btn-stop:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(226,75,74,.4)}
+#btn-reset{background:linear-gradient(135deg,#378ADD,#185FA5);color:#fff}
+#btn-reset:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(55,138,221,.4)}
+#panel{width:290px;background:#1a1a2e;border-left:1px solid #2a2a4a;display:flex;flex-direction:column;overflow-y:auto}
+#panel-header{padding:14px 14px 10px;background:linear-gradient(135deg,#0f0c29,#1a1a3e);border-bottom:1px solid #2a2a4a;flex-shrink:0}
+#panel-header .title{font-size:15px;font-weight:700;color:#fff}
+#panel-header .dev{font-size:12px;color:#1D9E75;margin-top:3px;font-weight:500}
+#panel-header .school-name{font-size:10px;color:#666;margin-top:2px}
+.panel-section{padding:10px 14px;border-bottom:1px solid #22223a;flex-shrink:0}
+.panel-title{font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.panel-title::before{content:'';display:inline-block;width:3px;height:10px;background:#1D9E75;border-radius:2px}
+.track-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.track-btn{font-size:11px;padding:7px 6px;border:1px solid #2a2a4a;border-radius:8px;background:#0d0d1a;color:#aaa;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
+.track-btn:hover{border-color:#1D9E75;color:#1D9E75}
+.track-btn.active{background:linear-gradient(135deg,#1D9E75,#0F6E56);color:#fff;border-color:#1D9E75;box-shadow:0 2px 8px rgba(29,158,117,.3)}
+.slider-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.slider-row label{font-size:11px;color:#666;width:36px;flex-shrink:0}
+.slider-row input[type=range]{flex:1;accent-color:#1D9E75;height:4px}
+.slider-val{font-size:12px;font-weight:600;min-width:38px;text-align:right;color:#1D9E75}
+.sensor-row{display:flex;gap:5px;justify-content:center;margin:6px 0}
+.sensor-dot{width:16px;height:16px;border-radius:50%;border:2px solid #2a2a4a;background:#0d0d1a;transition:all .1s}
+.sensor-dot.on{background:#E24B4A;border-color:#E24B4A;box-shadow:0 0 6px rgba(226,75,74,.6)}
+.sensor-hint{font-size:10px;color:#444;text-align:center;margin-top:2px}
+#hud{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.8);color:#00ff88;font-family:'Courier New',monospace;font-size:11px;padding:8px 12px;border-radius:8px;pointer-events:none;line-height:2;border:1px solid #1D9E7533}
+.log{font-size:10px;color:#444;padding:3px 0;border-bottom:1px solid #1a1a2e;font-family:monospace}
+#log-box{max-height:90px;overflow-y:auto}
+#footer{width:100%;max-width:1200px;text-align:center;margin-top:10px;font-size:11px;color:#333}
 </style>
 </head>
 <body>
+
+<div id="header">
+  <h1>🤖 Mini Robot Simulator</h1>
+  <div class="sub">นายชานน ชาญประโคน</div>
+  <div class="school">โรงเรียนหนองบุญมากประสงค์วิทยา</div>
+</div>
+
 <div id="app">
   <div id="canvas-area">
     <canvas id="sim"></canvas>
@@ -49,64 +67,223 @@ h1{color:#eee;font-size:13px;padding:10px 12px;border-bottom:1px solid #333}
     </div>
   </div>
   <div id="panel">
-    <div style="padding:8px 12px;border-bottom:1px solid #333;background:#1a1a2e">
-      <div style="font-size:13px;font-weight:500;color:#eee">Robot Simulator</div>
-      <div style="font-size:11px;color:#888;margin-top:2px">นายชานน ชาญประโคน</div>
-      <div style="font-size:10px;color:#666">โรงเรียนหนองบุญมากประสงค์วิทยา</div>
+    <div id="panel-header">
+      <div class="title">🤖 Robot Simulator</div>
+      <div class="dev">นายชานน ชาญประโคน</div>
+      <div class="school-name">โรงเรียนหนองบุญมากประสงค์วิทยา</div>
     </div>
     <div class="panel-section">
       <div class="panel-title">Track Builder</div>
-      <div class="btn-row">
-        <button onclick="setTrack('circle')" id="t-circle" class="active">วงกลม</button>
-        <button onclick="setTrack('figure8')" id="t-figure8">เลข 8</button>
-        <button onclick="setTrack('rect')" id="t-rect">สี่เหลี่ยม</button>
-        <button onclick="setTrack('zigzag')" id="t-zigzag">ซิกแซก</button>
+      <div class="track-grid">
+        <button onclick="setTrack('circle')"    id="t-circle"    class="track-btn active">⭕ วงกลม</button>
+        <button onclick="setTrack('figure8')"   id="t-figure8"   class="track-btn">∞ เลข 8</button>
+        <button onclick="setTrack('rect')"      id="t-rect"      class="track-btn">⬜ สี่เหลี่ยม</button>
+        <button onclick="setTrack('zigzag')"    id="t-zigzag"    class="track-btn">〰 ซิกแซก</button>
+        <button onclick="setTrack('testdrive')" id="t-testdrive" class="track-btn">🏁 Test Drive</button>
+        <button onclick="setTrack('spiral')"    id="t-spiral"    class="track-btn">🌀 Spiral</button>
+        <button onclick="setTrack('arena')"     id="t-arena"     class="track-btn">🏟 Arena</button>
       </div>
     </div>
     <div class="panel-section">
       <div class="panel-title">เซ็นเซอร์ IR 8 ดวง</div>
       <div class="sensor-row" id="sensors"></div>
-      <div style="font-size:11px;color:#666;text-align:center">แดง = เจอเส้น</div>
+      <div class="sensor-hint">● แดง = เจอเส้นดำ</div>
     </div>
     <div class="panel-section">
       <div class="panel-title">PID Tuning</div>
-      <div class="slider-row"><label>Motor</label><input type="range" min="10" max="100" value="70" step="1" id="sl-motor" oninput="updateVal(this,'v-motor')"><span id="v-motor">70</span>%</div>
-      <div class="slider-row"><label>Base</label><input type="range" min="5" max="60" value="30" step="1" id="sl-base" oninput="updateVal(this,'v-base')"><span id="v-base">30</span>%</div>
-      <div class="slider-row"><label>Kp</label><input type="range" min="0" max="50" value="14" step="1" id="sl-kp" oninput="updateKp(this)"><span id="v-kp">0.14</span></div>
-      <div class="slider-row"><label>Ki</label><input type="range" min="0" max="20" value="0" step="1" id="sl-ki" oninput="updateKi(this)"><span id="v-ki">0.00</span></div>
-      <div class="slider-row"><label>Kd</label><input type="range" min="0" max="50" value="0" step="1" id="sl-kd" oninput="updateKd(this)"><span id="v-kd">0.00</span></div>
+      <div class="slider-row"><label>Motor</label><input type="range" min="10" max="100" value="70" step="1" id="sl-motor" oninput="updateVal(this,'v-motor')"><span class="slider-val"><span id="v-motor">70</span>%</span></div>
+      <div class="slider-row"><label>Base</label><input type="range" min="5" max="60" value="30" step="1" id="sl-base" oninput="updateVal(this,'v-base')"><span class="slider-val"><span id="v-base">30</span>%</span></div>
+      <div class="slider-row"><label>Kp</label><input type="range" min="0" max="50" value="14" step="1" id="sl-kp" oninput="updateKp(this)"><span class="slider-val" id="v-kp">0.14</span></div>
+      <div class="slider-row"><label>Ki</label><input type="range" min="0" max="20" value="0" step="1" id="sl-ki" oninput="updateKi(this)"><span class="slider-val" id="v-ki">0.00</span></div>
+      <div class="slider-row"><label>Kd</label><input type="range" min="0" max="50" value="0" step="1" id="sl-kd" oninput="updateKd(this)"><span class="slider-val" id="v-kd">0.00</span></div>
     </div>
     <div class="panel-section">
       <div class="panel-title">Speed</div>
-      <div class="slider-row"><label>เร็ว</label><input type="range" min="0.5" max="3" value="1" step="0.5" id="sl-speed" oninput="updateVal(this,'v-speed')"><span id="v-speed">1</span>x</div>
+      <div class="slider-row"><label>Speed</label><input type="range" min="0.5" max="3" value="1" step="0.5" id="sl-speed" oninput="updateVal(this,'v-speed')"><span class="slider-val"><span id="v-speed">1</span>x</span></div>
     </div>
     <div class="panel-section" style="flex:1">
-      <div class="panel-title">Monitor</div>
+      <div class="panel-title">Monitor Log</div>
       <div id="log-box"></div>
     </div>
   </div>
 </div>
+
+<div id="footer">Mini Robot Simulator v3.0 — PrinceBot Style</div>
+
 <script>
 const canvas=document.getElementById('sim');
 const ctx=canvas.getContext('2d');
 const hud=document.getElementById('hud');
 let W,H;
 function resize(){const el=document.getElementById('canvas-area');W=canvas.width=el.clientWidth;H=canvas.height=el.clientHeight;buildTrack();}
+
 let trackPoints=[],trackType='circle';
-function setTrack(t){trackType=t;document.querySelectorAll('[id^=t-]').forEach(b=>b.classList.remove('active'));document.getElementById('t-'+t).classList.add('active');buildTrack();resetSim();}
-function buildTrack(){trackPoints=[];const cx=W/2,cy=H/2,r=Math.min(W,H)*0.38;if(trackType==='circle'){for(let i=0;i<=360;i++){const a=i*Math.PI/180;trackPoints.push({x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)});}}else if(trackType==='figure8'){const r2=r*0.42;for(let i=0;i<=720;i++){const a=i*Math.PI/180;trackPoints.push({x:cx+r2*Math.sin(a),y:cy+r2*Math.sin(a/2)*Math.cos(a/2)*2});}}else if(trackType==='rect'){const pad=r*0.85;const c=[{x:cx-pad,y:cy-pad*0.55},{x:cx+pad,y:cy-pad*0.55},{x:cx+pad,y:cy+pad*0.55},{x:cx-pad,y:cy+pad*0.55}];for(let i=0;i<=4;i++){const a=c[i%4],b=c[(i+1)%4];for(let t=0;t<=1;t+=0.02)trackPoints.push({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});}}else if(trackType==='zigzag'){const pts=[{x:cx-r,y:cy},{x:cx-r*.5,y:cy-r*.5},{x:cx,y:cy+r*.5},{x:cx+r*.5,y:cy-r*.5},{x:cx+r,y:cy},{x:cx+r*.5,y:cy+r*.5},{x:cx,y:cy-r*.5},{x:cx-r*.5,y:cy+r*.5},{x:cx-r,y:cy}];for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];for(let t=0;t<=1;t+=0.02)trackPoints.push({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});}}placeRobot();}
+function setTrack(t){trackType=t;document.querySelectorAll('.track-btn').forEach(b=>b.classList.remove('active'));document.getElementById('t-'+t).classList.add('active');buildTrack();resetSim();}
+
+// helper: interpolate two points
+function lerp(a,b,steps){const pts=[];for(let i=0;i<=steps;i++){const t=i/steps;pts.push({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});}return pts;}
+// helper: arc points
+function arc(cx,cy,rx,ry,a0,a1,steps){const pts=[];for(let i=0;i<=steps;i++){const a=a0+(a1-a0)*i/steps;pts.push({x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)});}return pts;}
+
+function buildTrack(){
+  trackPoints=[];
+  const cx=W/2, cy=H/2, r=Math.min(W,H)*0.38;
+
+  if(trackType==='circle'){
+    trackPoints.push(...arc(cx,cy,r,r,0,Math.PI*2,360));
+
+  } else if(trackType==='figure8'){
+    const r2=r*0.42;
+    trackPoints.push(...arc(cx,cy-r2,r2,r2,Math.PI/2,Math.PI*2+Math.PI/2,360));
+    trackPoints.push(...arc(cx,cy+r2,r2,r2,-Math.PI/2,Math.PI*2-Math.PI/2,360));
+
+  } else if(trackType==='rect'){
+    const pw=r*0.9, ph=r*0.6, rr=30;
+    function roundRect(x,y,w,h,rc){
+      const p=[];
+      p.push(...arc(x+rc,    y+rc,    rc,rc, Math.PI,   Math.PI*1.5, 20));
+      p.push(...lerp({x:x+rc,y:y},{x:x+w-rc,y:y},20));
+      p.push(...arc(x+w-rc,  y+rc,    rc,rc, -Math.PI/2,0,           20));
+      p.push(...lerp({x:x+w,y:y+rc},{x:x+w,y:y+h-rc},20));
+      p.push(...arc(x+w-rc,  y+h-rc,  rc,rc, 0,         Math.PI/2,   20));
+      p.push(...lerp({x:x+w-rc,y:y+h},{x:x+rc,y:y+h},20));
+      p.push(...arc(x+rc,    y+h-rc,  rc,rc, Math.PI/2, Math.PI,     20));
+      p.push(...lerp({x:x,y:y+h-rc},{x:x,y:y+rc},20));
+      return p;
+    }
+    trackPoints.push(...roundRect(cx-pw,cy-ph,pw*2,ph*2,rr));
+
+  } else if(trackType==='zigzag'){
+    const pts=[{x:cx-r,y:cy},{x:cx-r*.5,y:cy-r*.5},{x:cx,y:cy+r*.5},{x:cx+r*.5,y:cy-r*.5},{x:cx+r,y:cy},{x:cx+r*.5,y:cy+r*.5},{x:cx,y:cy-r*.5},{x:cx-r*.5,y:cy+r*.5},{x:cx-r,y:cy}];
+    for(let i=0;i<pts.length-1;i++)trackPoints.push(...lerp(pts[i],pts[i+1],30));
+
+  } else if(trackType==='testdrive'){
+    // สนามแบบ Test Drive: วงนอกใหญ่ + ลูปเล็กด้านใน + S-curve
+    const pw=W*0.42, ph=H*0.38, rr=40;
+    function rRect(x,y,w,h,rc){
+      const p=[];
+      p.push(...arc(x+rc,y+rc,rc,rc,Math.PI,Math.PI*1.5,20));
+      p.push(...lerp({x:x+rc,y:y},{x:x+w-rc,y:y},40));
+      p.push(...arc(x+w-rc,y+rc,rc,rc,-Math.PI/2,0,20));
+      p.push(...lerp({x:x+w,y:y+rc},{x:x+w,y:y+h-rc},40));
+      p.push(...arc(x+w-rc,y+h-rc,rc,rc,0,Math.PI/2,20));
+      p.push(...lerp({x:x+w-rc,y:y+h},{x:x+rc,y:y+h},40));
+      p.push(...arc(x+rc,y+h-rc,rc,rc,Math.PI/2,Math.PI,20));
+      p.push(...lerp({x:x,y:y+h-rc},{x:x,y:y+rc},40));
+      return p;
+    }
+    // outer big loop
+    trackPoints.push(...rRect(cx-pw,cy-ph,pw*2,ph*2,rr));
+    // inner small loop (left side)
+    const ir=ph*0.38;
+    trackPoints.push(...arc(cx-pw*0.35,cy,ir,ir,0,Math.PI*2,200));
+    // S-curve bottom section
+    for(let i=0;i<=80;i++){
+      const t=i/80;
+      trackPoints.push({x:cx-pw*0.1+pw*0.2*t, y:cy+ph*0.25+Math.sin(t*Math.PI*2)*ph*0.2});
+    }
+    // small hairpin right
+    trackPoints.push(...arc(cx+pw*0.45,cy,ph*0.25,ph*0.25,-Math.PI/2,Math.PI*1.5,200));
+
+  } else if(trackType==='spiral'){
+    // วงก้นหอย 3 รอบ (คล้าย LineFast)
+    const maxR=Math.min(W,H)*0.41, minR=maxR*0.14;
+    const loops=3, steps=loops*120;
+    for(let i=0;i<=steps;i++){
+      const a=(i/steps)*loops*Math.PI*2 - Math.PI/2;
+      const rr=maxR-(maxR-minR)*(i/steps);
+      trackPoints.push({x:cx+rr*Math.cos(a), y:cy+rr*Math.sin(a)});
+    }
+    // tail out
+    const last=trackPoints[trackPoints.length-1];
+    for(let i=1;i<=40;i++) trackPoints.push({x:last.x, y:last.y+i*minR*0.8/40});
+
+  } else if(trackType==='arena'){
+    // Arena: serpentine grid path + wavy right side (คล้าย Robot Arena)
+    const gLeft=W*0.1, gTop=H*0.1, gW=W*0.55, gH=H*0.8;
+    const cols=4, rows=3;
+    const cw=gW/cols, ch=gH/rows;
+    // entry line from top
+    trackPoints.push(...lerp({x:gLeft,y:gTop},{x:gLeft,y:gTop},1));
+    for(let row=0;row<=rows;row++){
+      const y0=gTop+row*ch;
+      if(row%2===0){
+        trackPoints.push(...lerp({x:gLeft,y:y0},{x:gLeft+gW,y:y0},60));
+        if(row<rows) trackPoints.push(...lerp({x:gLeft+gW,y:y0},{x:gLeft+gW,y:y0+ch},20));
+      } else {
+        trackPoints.push(...lerp({x:gLeft+gW,y:y0},{x:gLeft,y:y0},60));
+        if(row<rows) trackPoints.push(...lerp({x:gLeft,y:y0},{x:gLeft,y:y0+ch},20));
+      }
+    }
+    // connect to wavy section
+    const waveX=W*0.73;
+    trackPoints.push(...lerp({x:gLeft+gW,y:gTop+gH},{x:waveX,y:gTop},30));
+    // wavy right column
+    const waves=6, waveH=gH/waves;
+    for(let i=0;i<=waves*30;i++){
+      const t=i/(waves*30);
+      const y=gTop+t*gH;
+      trackPoints.push({x:waveX+Math.sin(t*waves*Math.PI*2)*W*0.07, y});
+    }
+    // return bottom
+    trackPoints.push(...lerp({x:waveX,y:gTop+gH},{x:gLeft,y:gTop+gH},40));
+  }
+
+  placeRobot();
+}
+
 let robot={x:0,y:0,angle:0,trail:[]},pidI=0,pidPrev=0;
-function placeRobot(){if(!trackPoints.length)return;const p=trackPoints[0],p2=trackPoints[1]||p;robot.x=p.x;robot.y=p.y;robot.angle=Math.atan2(p2.y-p.y,p2.x-p.x);robot.trail=[];pidI=0;pidPrev=0;}
+function placeRobot(){if(!trackPoints.length)return;const p=trackPoints[0],p2=trackPoints[Math.min(3,trackPoints.length-1)];robot.x=p.x;robot.y=p.y;robot.angle=Math.atan2(p2.y-p.y,p2.x-p.x);robot.trail=[];pidI=0;pidPrev=0;}
 function closestPt(x,y){let best=0,bestD=Infinity;for(let i=0;i<trackPoints.length;i++){const p=trackPoints[i];const d=(p.x-x)**2+(p.y-y)**2;if(d<bestD){bestD=d;best=i;}}return best;}
 function getSensors(){const n=8,spread=22,sensors=[];for(let i=0;i<n;i++){const off=(i-(n-1)/2)*spread/n;const sx=robot.x+Math.cos(robot.angle)*10+Math.cos(robot.angle+Math.PI/2)*off;const sy=robot.y+Math.sin(robot.angle)*10+Math.sin(robot.angle+Math.PI/2)*off;const tp=trackPoints[closestPt(sx,sy)];sensors.push(Math.sqrt((tp.x-sx)**2+(tp.y-sy)**2)<9);}return sensors;}
 function pidStep(){const sensors=getSensors();const n=sensors.length;let pos=0,count=0;for(let i=0;i<n;i++){if(sensors[i]){pos+=(i-(n-1)/2);count++;}}const error=count>0?pos/count:pidPrev;const kp=parseFloat(document.getElementById('sl-kp').value)/100;const ki=parseFloat(document.getElementById('sl-ki').value)/100;const kd=parseFloat(document.getElementById('sl-kd').value)/100;pidI+=error;const correction=kp*error+ki*pidI+kd*(error-pidPrev);pidPrev=error;return{correction,sensors,error:error.toFixed(2)};}
-function stepRobot(){const spd=parseFloat(document.getElementById('sl-speed').value);const motorMax=parseFloat(document.getElementById('sl-motor').value)/100;const{correction,sensors,error}=pidStep();robot.angle+=correction*0.08*spd;const vel=motorMax*2.5*spd*(1-Math.min(Math.abs(correction)*0.05,0.5));robot.x+=Math.cos(robot.angle)*vel;robot.y+=Math.sin(robot.angle)*vel;robot.trail.push({x:robot.x,y:robot.y});if(robot.trail.length>200)robot.trail.shift();return{sensors,error};}
-function drawTrack(){if(trackPoints.length<2)return;ctx.beginPath();ctx.moveTo(trackPoints[0].x,trackPoints[0].y);for(let i=1;i<trackPoints.length;i++)ctx.lineTo(trackPoints[i].x,trackPoints[i].y);if(trackType==='circle'||trackType==='figure8')ctx.closePath();ctx.strokeStyle='#222';ctx.lineWidth=14;ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke();}
-function drawTrail(){if(robot.trail.length<2)return;ctx.beginPath();ctx.moveTo(robot.trail[0].x,robot.trail[0].y);for(let i=1;i<robot.trail.length;i++)ctx.lineTo(robot.trail[i].x,robot.trail[i].y);ctx.strokeStyle='rgba(29,158,117,0.35)';ctx.lineWidth=2;ctx.stroke();}
-function drawRobot(sensors){ctx.save();ctx.translate(robot.x,robot.y);ctx.rotate(robot.angle);ctx.fillStyle='#185FA5';ctx.beginPath();ctx.roundRect(-10,-8,20,16,3);ctx.fill();ctx.fillStyle='#B5D4F4';ctx.beginPath();ctx.arc(8,0,4,0,Math.PI*2);ctx.fill();const n=sensors.length,spread=22;for(let i=0;i<n;i++){const off=(i-(n-1)/2)*spread/n;ctx.beginPath();ctx.arc(10,off,3,0,Math.PI*2);ctx.fillStyle=sensors[i]?'#E24B4A':'#aaa';ctx.fill();}ctx.restore();const dots=document.querySelectorAll('.sensor-dot');sensors.forEach((s,i)=>{if(dots[i])dots[i].classList.toggle('on',s);});}
+function stepRobot(){const spd=parseFloat(document.getElementById('sl-speed').value);const motorMax=parseFloat(document.getElementById('sl-motor').value)/100;const{correction,sensors,error}=pidStep();robot.angle+=correction*0.08*spd;const vel=motorMax*2.5*spd*(1-Math.min(Math.abs(correction)*0.05,0.5));robot.x+=Math.cos(robot.angle)*vel;robot.y+=Math.sin(robot.angle)*vel;robot.trail.push({x:robot.x,y:robot.y});if(robot.trail.length>400)robot.trail.shift();return{sensors,error};}
+
+function drawBg(){ctx.strokeStyle='rgba(255,255,255,0.03)';ctx.lineWidth=1;for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}}
+
+function drawTrack(){
+  if(trackPoints.length<2)return;
+  ctx.beginPath();ctx.moveTo(trackPoints[0].x,trackPoints[0].y);
+  for(let i=1;i<trackPoints.length;i++)ctx.lineTo(trackPoints[i].x,trackPoints[i].y);
+  ctx.strokeStyle='#1a1a3a';ctx.lineWidth=18;ctx.stroke();
+  ctx.strokeStyle='#e8e8e8';ctx.lineWidth=4;ctx.stroke();
+  // start marker
+  ctx.beginPath();ctx.arc(trackPoints[0].x,trackPoints[0].y,7,0,Math.PI*2);
+  ctx.fillStyle='#1D9E75';ctx.fill();
+}
+
+function drawTrail(){if(robot.trail.length<2)return;ctx.beginPath();ctx.moveTo(robot.trail[0].x,robot.trail[0].y);for(let i=1;i<robot.trail.length;i++)ctx.lineTo(robot.trail[i].x,robot.trail[i].y);ctx.strokeStyle='rgba(29,158,117,0.25)';ctx.lineWidth=2;ctx.stroke();}
+
+function drawRobot(sensors){
+  ctx.save();ctx.translate(robot.x,robot.y);ctx.rotate(robot.angle);
+  ctx.shadowColor='#378ADD';ctx.shadowBlur=10;
+  ctx.fillStyle='#185FA5';ctx.beginPath();ctx.roundRect(-12,-9,24,18,4);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#0d0d1a';
+  ctx.fillRect(-10,-12,6,4);ctx.fillRect(-10,8,6,4);
+  ctx.fillRect(4,-12,6,4);ctx.fillRect(4,8,6,4);
+  ctx.fillStyle='#FFE566';ctx.beginPath();ctx.arc(12,0,3,0,Math.PI*2);ctx.fill();
+  const n=sensors.length,spread=22;
+  for(let i=0;i<n;i++){const off=(i-(n-1)/2)*spread/n;ctx.beginPath();ctx.arc(13,off,2.5,0,Math.PI*2);ctx.fillStyle=sensors[i]?'#E24B4A':'#555';if(sensors[i]){ctx.shadowColor='#E24B4A';ctx.shadowBlur=4;}ctx.fill();ctx.shadowBlur=0;}
+  ctx.restore();
+  const dots=document.querySelectorAll('.sensor-dot');sensors.forEach((s,i)=>{if(dots[i])dots[i].classList.toggle('on',s);});
+}
+
 let running=false,animId=null,frameCount=0;
-function drawFrame(){ctx.clearRect(0,0,W,H);const{sensors,error}=stepRobot();drawTrail();drawTrack();drawRobot(sensors);const on=sensors.filter(Boolean).length;const kp=(parseFloat(document.getElementById('sl-kp').value)/100).toFixed(2);const ki=(parseFloat(document.getElementById('sl-ki').value)/100).toFixed(2);const kd=(parseFloat(document.getElementById('sl-kd').value)/100).toFixed(2);hud.innerHTML=`Error: ${error}<br>Sensors: ${on}/8<br>Kp: ${kp} | Ki: ${ki} | Kd: ${kd}`;frameCount++;if(frameCount%60===0)addLog(`err=${error} sens=${on}/8`);if(running)animId=requestAnimationFrame(drawFrame);}
-function drawIdle(){if(!running){ctx.clearRect(0,0,W,H);drawTrack();drawRobot(getSensors());}}
+function drawFrame(){
+  ctx.clearRect(0,0,W,H);drawBg();
+  const{sensors,error}=stepRobot();
+  drawTrail();drawTrack();drawRobot(sensors);
+  const on=sensors.filter(Boolean).length;
+  const kp=(parseFloat(document.getElementById('sl-kp').value)/100).toFixed(2);
+  const ki=(parseFloat(document.getElementById('sl-ki').value)/100).toFixed(2);
+  const kd=(parseFloat(document.getElementById('sl-kd').value)/100).toFixed(2);
+  hud.innerHTML=`ERR : ${error}<br>SENS: ${on}/8 active<br>Kp  : ${kp}<br>Ki  : ${ki}<br>Kd  : ${kd}`;
+  frameCount++;
+  if(frameCount%90===0)addLog(`[${frameCount}] err=${error} s=${on}/8`);
+  if(running)animId=requestAnimationFrame(drawFrame);
+}
+function drawIdle(){if(!running){ctx.clearRect(0,0,W,H);drawBg();drawTrack();drawRobot(getSensors());}}
 function toggleRun(){if(running){running=false;document.getElementById('btn-run').textContent='▶ Run';if(animId)cancelAnimationFrame(animId);drawIdle();}else{running=true;document.getElementById('btn-run').textContent='⏸ Pause';frameCount=0;drawFrame();}}
 function stopSim(){running=false;document.getElementById('btn-run').textContent='▶ Run';if(animId)cancelAnimationFrame(animId);drawIdle();}
 function resetSim(){stopSim();placeRobot();drawIdle();document.getElementById('log-box').innerHTML='';hud.innerHTML='';}
@@ -114,9 +291,23 @@ function updateVal(el,id){document.getElementById(id).textContent=el.value;}
 function updateKp(el){document.getElementById('v-kp').textContent=(el.value/100).toFixed(2);}
 function updateKi(el){document.getElementById('v-ki').textContent=(el.value/100).toFixed(2);pidI=0;}
 function updateKd(el){document.getElementById('v-kd').textContent=(el.value/100).toFixed(2);}
-function addLog(msg){const lb=document.getElementById('log-box');const d=document.createElement('div');d.className='log';d.textContent=msg;lb.insertBefore(d,lb.firstChild);while(lb.children.length>10)lb.removeChild(lb.lastChild);}
+function addLog(msg){const lb=document.getElementById('log-box');const d=document.createElement('div');d.className='log';d.textContent=msg;lb.insertBefore(d,lb.firstChild);while(lb.children.length>12)lb.removeChild(lb.lastChild);}
+
 const sb=document.getElementById('sensors');
 for(let i=0;i<8;i++){const d=document.createElement('div');d.className='sensor-dot';sb.appendChild(d);}
+
+// --- Drag robot ---
+let dragging=false;
+function getCanvasPos(e){const rect=canvas.getBoundingClientRect();const scaleX=W/rect.width,scaleY=H/rect.height;const src=e.touches?e.touches[0]:e;return{x:(src.clientX-rect.left)*scaleX,y:(src.clientY-rect.top)*scaleY};}
+function isNearRobot(x,y){return Math.sqrt((x-robot.x)**2+(y-robot.y)**2)<24;}
+canvas.addEventListener('mousedown',e=>{const pos=getCanvasPos(e);if(isNearRobot(pos.x,pos.y)){dragging=true;canvas.style.cursor='grabbing';e.preventDefault();}});
+canvas.addEventListener('mousemove',e=>{const pos=getCanvasPos(e);if(dragging){robot.x=pos.x;robot.y=pos.y;robot.trail=[];pidI=0;pidPrev=0;if(!running)drawIdle();}else{canvas.style.cursor=isNearRobot(pos.x,pos.y)?'grab':'default';}});
+canvas.addEventListener('mouseup',()=>{dragging=false;canvas.style.cursor='default';});
+canvas.addEventListener('mouseleave',()=>{dragging=false;canvas.style.cursor='default';});
+canvas.addEventListener('touchstart',e=>{const pos=getCanvasPos(e);if(isNearRobot(pos.x,pos.y)){dragging=true;e.preventDefault();}},{passive:false});
+canvas.addEventListener('touchmove',e=>{if(dragging){const pos=getCanvasPos(e);robot.x=pos.x;robot.y=pos.y;robot.trail=[];pidI=0;pidPrev=0;if(!running)drawIdle();e.preventDefault();}},{passive:false});
+canvas.addEventListener('touchend',()=>{dragging=false;});
+
 window.addEventListener('resize',()=>{resize();drawIdle();});
 resize();drawIdle();
 </script>
