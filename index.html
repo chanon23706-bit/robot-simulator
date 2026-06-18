@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Robot Simulator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#1a1a2e;display:flex;justify-content:center;align-items:center;min-height:100vh}
+#app{display:flex;width:900px;height:580px;background:#1e1e2e;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+#canvas-area{flex:1;position:relative;background:#111;overflow:hidden}
+canvas#sim{width:100%;height:100%;display:block}
+#toolbar{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+#toolbar button{font-size:13px;padding:6px 18px;border:none;border-radius:8px;cursor:pointer;font-weight:500}
+#btn-run{background:#1D9E75;color:#fff}
+#btn-run:hover{background:#0F6E56}
+#btn-stop{background:#E24B4A;color:#fff}
+#btn-stop:hover{background:#A32D2D}
+#btn-reset{background:#378ADD;color:#fff}
+#btn-reset:hover{background:#185FA5}
+#panel{width:260px;background:#252535;border-left:1px solid #333;display:flex;flex-direction:column;overflow-y:auto}
+.panel-section{padding:10px 12px;border-bottom:1px solid #333}
+.panel-title{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.btn-row{display:flex;gap:5px;flex-wrap:wrap}
+.btn-row button{font-size:11px;padding:4px 8px;border:1px solid #444;border-radius:6px;background:#1e1e2e;color:#ccc;cursor:pointer}
+.btn-row button.active{background:#1D9E75;color:#fff;border-color:#0F6E56}
+.slider-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.slider-row label{font-size:12px;color:#888;width:38px;flex-shrink:0}
+.slider-row input[type=range]{flex:1;accent-color:#1D9E75}
+.slider-row span{font-size:12px;font-weight:500;min-width:34px;text-align:right;color:#eee}
+.sensor-row{display:flex;gap:4px;justify-content:center;margin:4px 0}
+.sensor-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid #555;background:#333;transition:background .1s}
+.sensor-dot.on{background:#E24B4A;border-color:#A32D2D}
+#hud{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.7);color:#0f0;font-family:monospace;font-size:11px;padding:6px 10px;border-radius:6px;pointer-events:none;line-height:1.8}
+.log{font-size:11px;color:#666;padding:3px 0;border-bottom:1px solid #333}
+#log-box{max-height:80px;overflow-y:auto}
+h1{color:#eee;font-size:13px;padding:10px 12px;border-bottom:1px solid #333}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="canvas-area">
+    <canvas id="sim"></canvas>
+    <div id="hud"></div>
+    <div id="toolbar">
+      <button id="btn-run" onclick="toggleRun()">▶ Run</button>
+      <button id="btn-stop" onclick="stopSim()">■ Stop</button>
+      <button id="btn-reset" onclick="resetSim()">↺ Reset</button>
+    </div>
+  </div>
+  <div id="panel">
+    <div style="padding:8px 12px;border-bottom:1px solid #333;background:#1a1a2e">
+      <div style="font-size:13px;font-weight:500;color:#eee">Robot Simulator</div>
+      <div style="font-size:11px;color:#888;margin-top:2px">นายชานน ชาญประโคน</div>
+      <div style="font-size:10px;color:#666">โรงเรียนหนองบุญมากประสงค์วิทยา</div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-title">Track Builder</div>
+      <div class="btn-row">
+        <button onclick="setTrack('circle')" id="t-circle" class="active">วงกลม</button>
+        <button onclick="setTrack('figure8')" id="t-figure8">เลข 8</button>
+        <button onclick="setTrack('rect')" id="t-rect">สี่เหลี่ยม</button>
+        <button onclick="setTrack('zigzag')" id="t-zigzag">ซิกแซก</button>
+      </div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-title">เซ็นเซอร์ IR 8 ดวง</div>
+      <div class="sensor-row" id="sensors"></div>
+      <div style="font-size:11px;color:#666;text-align:center">แดง = เจอเส้น</div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-title">PID Tuning</div>
+      <div class="slider-row"><label>Motor</label><input type="range" min="10" max="100" value="70" step="1" id="sl-motor" oninput="updateVal(this,'v-motor')"><span id="v-motor">70</span>%</div>
+      <div class="slider-row"><label>Base</label><input type="range" min="5" max="60" value="30" step="1" id="sl-base" oninput="updateVal(this,'v-base')"><span id="v-base">30</span>%</div>
+      <div class="slider-row"><label>Kp</label><input type="range" min="0" max="50" value="14" step="1" id="sl-kp" oninput="updateKp(this)"><span id="v-kp">0.14</span></div>
+      <div class="slider-row"><label>Ki</label><input type="range" min="0" max="20" value="0" step="1" id="sl-ki" oninput="updateKi(this)"><span id="v-ki">0.00</span></div>
+      <div class="slider-row"><label>Kd</label><input type="range" min="0" max="50" value="0" step="1" id="sl-kd" oninput="updateKd(this)"><span id="v-kd">0.00</span></div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-title">Speed</div>
+      <div class="slider-row"><label>เร็ว</label><input type="range" min="0.5" max="3" value="1" step="0.5" id="sl-speed" oninput="updateVal(this,'v-speed')"><span id="v-speed">1</span>x</div>
+    </div>
+    <div class="panel-section" style="flex:1">
+      <div class="panel-title">Monitor</div>
+      <div id="log-box"></div>
+    </div>
+  </div>
+</div>
+<script>
+const canvas=document.getElementById('sim');
+const ctx=canvas.getContext('2d');
+const hud=document.getElementById('hud');
+let W,H;
+function resize(){const el=document.getElementById('canvas-area');W=canvas.width=el.clientWidth;H=canvas.height=el.clientHeight;buildTrack();}
+let trackPoints=[],trackType='circle';
+function setTrack(t){trackType=t;document.querySelectorAll('[id^=t-]').forEach(b=>b.classList.remove('active'));document.getElementById('t-'+t).classList.add('active');buildTrack();resetSim();}
+function buildTrack(){trackPoints=[];const cx=W/2,cy=H/2,r=Math.min(W,H)*0.38;if(trackType==='circle'){for(let i=0;i<=360;i++){const a=i*Math.PI/180;trackPoints.push({x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)});}}else if(trackType==='figure8'){const r2=r*0.42;for(let i=0;i<=720;i++){const a=i*Math.PI/180;trackPoints.push({x:cx+r2*Math.sin(a),y:cy+r2*Math.sin(a/2)*Math.cos(a/2)*2});}}else if(trackType==='rect'){const pad=r*0.85;const c=[{x:cx-pad,y:cy-pad*0.55},{x:cx+pad,y:cy-pad*0.55},{x:cx+pad,y:cy+pad*0.55},{x:cx-pad,y:cy+pad*0.55}];for(let i=0;i<=4;i++){const a=c[i%4],b=c[(i+1)%4];for(let t=0;t<=1;t+=0.02)trackPoints.push({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});}}else if(trackType==='zigzag'){const pts=[{x:cx-r,y:cy},{x:cx-r*.5,y:cy-r*.5},{x:cx,y:cy+r*.5},{x:cx+r*.5,y:cy-r*.5},{x:cx+r,y:cy},{x:cx+r*.5,y:cy+r*.5},{x:cx,y:cy-r*.5},{x:cx-r*.5,y:cy+r*.5},{x:cx-r,y:cy}];for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];for(let t=0;t<=1;t+=0.02)trackPoints.push({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});}}placeRobot();}
+let robot={x:0,y:0,angle:0,trail:[]},pidI=0,pidPrev=0;
+function placeRobot(){if(!trackPoints.length)return;const p=trackPoints[0],p2=trackPoints[1]||p;robot.x=p.x;robot.y=p.y;robot.angle=Math.atan2(p2.y-p.y,p2.x-p.x);robot.trail=[];pidI=0;pidPrev=0;}
+function closestPt(x,y){let best=0,bestD=Infinity;for(let i=0;i<trackPoints.length;i++){const p=trackPoints[i];const d=(p.x-x)**2+(p.y-y)**2;if(d<bestD){bestD=d;best=i;}}return best;}
+function getSensors(){const n=8,spread=22,sensors=[];for(let i=0;i<n;i++){const off=(i-(n-1)/2)*spread/n;const sx=robot.x+Math.cos(robot.angle)*10+Math.cos(robot.angle+Math.PI/2)*off;const sy=robot.y+Math.sin(robot.angle)*10+Math.sin(robot.angle+Math.PI/2)*off;const tp=trackPoints[closestPt(sx,sy)];sensors.push(Math.sqrt((tp.x-sx)**2+(tp.y-sy)**2)<9);}return sensors;}
+function pidStep(){const sensors=getSensors();const n=sensors.length;let pos=0,count=0;for(let i=0;i<n;i++){if(sensors[i]){pos+=(i-(n-1)/2);count++;}}const error=count>0?pos/count:pidPrev;const kp=parseFloat(document.getElementById('sl-kp').value)/100;const ki=parseFloat(document.getElementById('sl-ki').value)/100;const kd=parseFloat(document.getElementById('sl-kd').value)/100;pidI+=error;const correction=kp*error+ki*pidI+kd*(error-pidPrev);pidPrev=error;return{correction,sensors,error:error.toFixed(2)};}
+function stepRobot(){const spd=parseFloat(document.getElementById('sl-speed').value);const motorMax=parseFloat(document.getElementById('sl-motor').value)/100;const{correction,sensors,error}=pidStep();robot.angle+=correction*0.08*spd;const vel=motorMax*2.5*spd*(1-Math.min(Math.abs(correction)*0.05,0.5));robot.x+=Math.cos(robot.angle)*vel;robot.y+=Math.sin(robot.angle)*vel;robot.trail.push({x:robot.x,y:robot.y});if(robot.trail.length>200)robot.trail.shift();return{sensors,error};}
+function drawTrack(){if(trackPoints.length<2)return;ctx.beginPath();ctx.moveTo(trackPoints[0].x,trackPoints[0].y);for(let i=1;i<trackPoints.length;i++)ctx.lineTo(trackPoints[i].x,trackPoints[i].y);if(trackType==='circle'||trackType==='figure8')ctx.closePath();ctx.strokeStyle='#222';ctx.lineWidth=14;ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke();}
+function drawTrail(){if(robot.trail.length<2)return;ctx.beginPath();ctx.moveTo(robot.trail[0].x,robot.trail[0].y);for(let i=1;i<robot.trail.length;i++)ctx.lineTo(robot.trail[i].x,robot.trail[i].y);ctx.strokeStyle='rgba(29,158,117,0.35)';ctx.lineWidth=2;ctx.stroke();}
+function drawRobot(sensors){ctx.save();ctx.translate(robot.x,robot.y);ctx.rotate(robot.angle);ctx.fillStyle='#185FA5';ctx.beginPath();ctx.roundRect(-10,-8,20,16,3);ctx.fill();ctx.fillStyle='#B5D4F4';ctx.beginPath();ctx.arc(8,0,4,0,Math.PI*2);ctx.fill();const n=sensors.length,spread=22;for(let i=0;i<n;i++){const off=(i-(n-1)/2)*spread/n;ctx.beginPath();ctx.arc(10,off,3,0,Math.PI*2);ctx.fillStyle=sensors[i]?'#E24B4A':'#aaa';ctx.fill();}ctx.restore();const dots=document.querySelectorAll('.sensor-dot');sensors.forEach((s,i)=>{if(dots[i])dots[i].classList.toggle('on',s);});}
+let running=false,animId=null,frameCount=0;
+function drawFrame(){ctx.clearRect(0,0,W,H);const{sensors,error}=stepRobot();drawTrail();drawTrack();drawRobot(sensors);const on=sensors.filter(Boolean).length;const kp=(parseFloat(document.getElementById('sl-kp').value)/100).toFixed(2);const ki=(parseFloat(document.getElementById('sl-ki').value)/100).toFixed(2);const kd=(parseFloat(document.getElementById('sl-kd').value)/100).toFixed(2);hud.innerHTML=`Error: ${error}<br>Sensors: ${on}/8<br>Kp: ${kp} | Ki: ${ki} | Kd: ${kd}`;frameCount++;if(frameCount%60===0)addLog(`err=${error} sens=${on}/8`);if(running)animId=requestAnimationFrame(drawFrame);}
+function drawIdle(){if(!running){ctx.clearRect(0,0,W,H);drawTrack();drawRobot(getSensors());}}
+function toggleRun(){if(running){running=false;document.getElementById('btn-run').textContent='▶ Run';if(animId)cancelAnimationFrame(animId);drawIdle();}else{running=true;document.getElementById('btn-run').textContent='⏸ Pause';frameCount=0;drawFrame();}}
+function stopSim(){running=false;document.getElementById('btn-run').textContent='▶ Run';if(animId)cancelAnimationFrame(animId);drawIdle();}
+function resetSim(){stopSim();placeRobot();drawIdle();document.getElementById('log-box').innerHTML='';hud.innerHTML='';}
+function updateVal(el,id){document.getElementById(id).textContent=el.value;}
+function updateKp(el){document.getElementById('v-kp').textContent=(el.value/100).toFixed(2);}
+function updateKi(el){document.getElementById('v-ki').textContent=(el.value/100).toFixed(2);pidI=0;}
+function updateKd(el){document.getElementById('v-kd').textContent=(el.value/100).toFixed(2);}
+function addLog(msg){const lb=document.getElementById('log-box');const d=document.createElement('div');d.className='log';d.textContent=msg;lb.insertBefore(d,lb.firstChild);while(lb.children.length>10)lb.removeChild(lb.lastChild);}
+const sb=document.getElementById('sensors');
+for(let i=0;i<8;i++){const d=document.createElement('div');d.className='sensor-dot';sb.appendChild(d);}
+window.addEventListener('resize',()=>{resize();drawIdle();});
+resize();drawIdle();
+</script>
+</body>
+</html>
